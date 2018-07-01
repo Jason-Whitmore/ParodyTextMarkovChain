@@ -8,6 +8,8 @@
 
 
 class MarkovChain {
+
+
 	public:
 	MarkovChain(std::string filePath);
 
@@ -15,7 +17,9 @@ class MarkovChain {
 	private:
 
 	int numUniqueWords;
+	std::map<int,std::string> wordSet;
 
+	std::vector<std::vector<WordStruct>> adjMatrix;
 
 
 };
