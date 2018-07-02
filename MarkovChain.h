@@ -1,25 +1,21 @@
-#pragma once
-#include <vector>
-#include <random>
-#include <map>
-#include <cmath>
-#include <string>
 #include <iostream>
-
+#include <string>
+#include <map>
 
 class MarkovChain {
-
-
 	public:
-	MarkovChain(std::string filePath);
-
+	MarkovChain(std::string filePath, bool isAdjList);
 
 	private:
+	std::map<int, std::string> wordset;
 
-	int numUniqueWords;
-	std::map<int,std::string> wordSet;
+};
 
-	std::vector<std::vector<WordStruct>> adjMatrix;
+struct Word {
+	std::string word;
+	int index;
 
+	double probability;
 
+	int count;
 };

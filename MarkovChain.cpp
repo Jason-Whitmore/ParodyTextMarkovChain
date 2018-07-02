@@ -1,18 +1,5 @@
 #include "MarkovChain.h"
 
-
-MarkovChain::MarkovChain(std::string filePath) {
-	
-
+MarkovChain::MarkovChain(std::string filePath, bool isAdjList) {
+	std::cout << "Constructor working!" << std::endl;
 }
-
-
-
-struct WordStruct {
-	std::string word;
-	int index;
-	double probability;
-
-	int count;
-};
-
