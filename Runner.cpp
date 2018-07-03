@@ -3,6 +3,6 @@
 
 int main() {
 	MarkovChain m = MarkovChain("AGOT.txt", false);
-	std::cout << "test" << std::endl;
+	m.printHighestProbability();
 	while(true);
 }

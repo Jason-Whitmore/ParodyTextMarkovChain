@@ -25,6 +25,7 @@ struct WordSetItem {
 class MarkovChain {
 	public:
 	MarkovChain(std::string filePath, bool isAdjList);
+	void printHighestProbability();
 
 	private:
 	std::map<int, WordSetItem> wordSet;
@@ -34,4 +35,9 @@ class MarkovChain {
 	std::hash<std::string> hash;
 
 	int getIndexOfWord(std::string s);
+	bool containedInAdjList(int row, std::string s);
+	Word getWordFromAdjList(int row, std::string s);
+	void incrementWordFromAdjList(int row, std::string s);
+	void writeAdjListToFile(std::string path);
+	
 };
