@@ -1,21 +1,33 @@
+#include "Helper.h"
 #include <iostream>
-#include <string>
 #include <map>
+#include <fstream>
+
+
+
+struct Word {
+
+	std::string word;
+
+	double probability;
+
+	int count;
+};
+
+struct WordSetItem {
+	int key;
+	std::string word;
+	int index;
+};
+
+
 
 class MarkovChain {
 	public:
 	MarkovChain(std::string filePath, bool isAdjList);
 
 	private:
-	std::map<int, std::string> wordset;
+	std::map<int, WordSetItem> wordSet;
 
-};
-
-struct Word {
-	std::string word;
-	int index;
-
-	double probability;
-
-	int count;
+	std::vector<std::vector<Word>> adjList;
 };
