@@ -28,6 +28,10 @@ class MarkovChain {
 
 	private:
 	std::map<int, WordSetItem> wordSet;
-
+	std::vector<std::string> sentenceStarters;
 	std::vector<std::vector<Word>> adjList;
+
+	std::hash<std::string> hash;
+
+	int getIndexOfWord(std::string s);
 };
