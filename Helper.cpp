@@ -32,3 +32,13 @@ bool Helper::contains(std::string s, std::string targetString) {
 
 	return false;
 }
+
+double Helper::randomDouble(double min, double max) {
+	double scalar = (double)rand() / RAND_MAX;
+
+	return min + (scalar * (max - min));
+}
+
+int Helper::randomInt(int min, int max) {
+	return (int)randomDouble(min,max);
+}

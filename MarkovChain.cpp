@@ -23,7 +23,11 @@ MarkovChain::MarkovChain(std::string filePath, bool isAdjList) {
 
 				if (lineSplit[0] == "Starters") {
 					//line is a starter word
-					sentenceStarters.push_back(lineSplit[1]);
+
+					for (int i = 1; i < lineSplit.size(); i++) {
+						sentenceStarters.push_back(lineSplit[i]);
+					}
+					
 				} else if (lineSplit[0] == "WordSetItem") {
 					setItem.index = std::stoi(lineSplit[1]);
 					setItem.key = std::stoi(lineSplit[2]);
@@ -243,4 +247,47 @@ void MarkovChain::writeAdjListToFile(std::string path) {
 	file.open(path);
 	file << output;
 	file.close();
+}
+
+std::string MarkovChain::generateText(int numSentences) {
+
+	int periods = 0;
+
+	std::string result = "";
+	int randInt = Helper::randomInt(0, sentenceStarters.size());
+	std::string startWord = sentenceStarters[randInt];
+	std::string currentWord = startWord;
+	result += currentWord;
+	while (periods < numSentences ) {
+		currentWord = pickWordFromRow(getIndexOfWord(currentWord));
+
+		if (currentWord == "") {
+			//hit a dud. start a new sentence
+			result += ".";
+			currentWord = sentenceStarters[Helper::randomInt(0, sentenceStarters.size())];
+		} else {
+			result += " " + currentWord;
+			if (Helper::contains(currentWord, ".")) {
+				periods++;
+			}
+		}
+	}
+
+	return result;
+}
+
+std::string MarkovChain::pickWordFromRow(int row) {
+	if (adjList[row].size() == 1) {
+		//basically a dead end
+		return "";
+	}
+
+	double rand;
+	for (int i = 1; i < adjList[row].size(); i++) {
+		rand = Helper::randomDouble(0, 1);
+		if (rand < adjList[row][i].probability) {
+			return adjList[row][i].word;
+		}
+	}
+	return adjList[row][adjList[row].size() - 1].word;
 }
