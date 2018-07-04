@@ -9,11 +9,40 @@ MarkovChain::MarkovChain(std::string filePath, bool isAdjList) {
 
 	WordSetItem setItem;
 
-
+	
 	int currentIndex = 0;
 
 	if (isAdjList) {
 
+		Word w;
+		if (file.is_open()) {
+			
+			while (std::getline(file, singleLine)) {
+				//line's contents are in singleLine
+				lineSplit = Helper::split(singleLine, " ");
+
+				if (lineSplit[0] == "Starters") {
+					//line is a starter word
+					sentenceStarters.push_back(lineSplit[1]);
+				} else if (lineSplit[0] == "WordSetItem") {
+					setItem.index = std::stoi(lineSplit[1]);
+					setItem.key = std::stoi(lineSplit[2]);
+					setItem.word = lineSplit[3];
+					wordSet[hash(lineSplit[3])] = setItem;
+				} else if (lineSplit[0] == "AdjList") {
+					w.word = lineSplit[2];
+					w.probability = std::stod(lineSplit[3]);
+
+					adjList[getIndexOfWord(lineSplit[1])].push_back(w);
+				}
+
+				adjList.resize(wordSet.size());
+			}
+
+
+		} else {
+			//file could not be opened
+		}
 	} else {
 		
 		if (file.is_open()) {
@@ -68,11 +97,17 @@ MarkovChain::MarkovChain(std::string filePath, bool isAdjList) {
 				//line's contents are in singleLine
 				lineSplit = Helper::split(singleLine, " ");
 
+				//add the start of the line into the sentence starters vector for use later
+				if (lineSplit[0].length() > 0) {
+					sentenceStarters.push_back(lineSplit[0]);
+				}
+				
 				
 				
 
 				//loop through each word in the line
 				for (int i = 0; i < lineSplit.size() - 1; i++) {
+					
 					//word currently not in the list?
 					if (!containedInAdjList(getIndexOfWord(lineSplit[i]), lineSplit[i+1])) {
 						//add the word to the list
@@ -108,7 +143,12 @@ MarkovChain::MarkovChain(std::string filePath, bool isAdjList) {
 
 			//set appropriate probability
 			for (int c = 0; c < adjList[r].size(); c++) {
-				adjList[r][c].probability = adjList[r][c].count / totalCount;
+				if (totalCount == 0) {
+					adjList[r][c].probability = 0;
+				} else {
+					adjList[r][c].probability = adjList[r][c].count / totalCount;
+				}
+				
 			}
 		}
 
@@ -176,5 +216,31 @@ void MarkovChain::printHighestProbability() {
 
 
 void MarkovChain::writeAdjListToFile(std::string path) {
+	//save the sentence starters
+	std::string output = "Starters ";
 
+
+	for (int i = 0; i < sentenceStarters.size(); i++) {
+		output += sentenceStarters[i] + " ";
+	}
+	output += "\n";
+	//save the wordSetItems
+	WordSetItem w;
+	for (auto& x : wordSet) {
+		w = x.second;
+		output += "WordSetItem " + std::to_string(w.index) + " " + std::to_string(w.key) + " " + w.word + "\n";
+	}
+
+
+	//save the adj List
+	for (int r = 0; r < adjList.size(); r++) {
+		for (int c = 0; c < adjList[r].size(); c++) {
+			output += "AdjList " + adjList[r][0].word + " " + adjList[r][c].word + " " + std::to_string(adjList[r][c].probability) + "\n";
+		}
+	}
+
+	std::ofstream file;
+	file.open(path);
+	file << output;
+	file.close();
 }

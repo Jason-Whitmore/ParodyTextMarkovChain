@@ -26,6 +26,7 @@ class MarkovChain {
 	public:
 	MarkovChain(std::string filePath, bool isAdjList);
 	void printHighestProbability();
+	void writeAdjListToFile(std::string path);
 
 	private:
 	std::map<int, WordSetItem> wordSet;
@@ -38,6 +39,6 @@ class MarkovChain {
 	bool containedInAdjList(int row, std::string s);
 	Word getWordFromAdjList(int row, std::string s);
 	void incrementWordFromAdjList(int row, std::string s);
-	void writeAdjListToFile(std::string path);
+	
 	
 };
