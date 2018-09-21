@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <fstream>
+#include <unistd.h>
 
 
 
@@ -27,7 +28,7 @@ class MarkovChain {
 	MarkovChain(std::string filePath, bool isAdjList);
 	void printHighestProbability();
 	void writeAdjListToFile(std::string path);
-	std::string generateText(int numSentences);
+	std::string generateText(int numWords);
 
 	private:
 	std::map<int, WordSetItem> wordSet;

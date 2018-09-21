@@ -249,16 +249,18 @@ void MarkovChain::writeAdjListToFile(std::string path) {
 	file.close();
 }
 
-std::string MarkovChain::generateText(int numSentences) {
-
-	int periods = 0;
+std::string MarkovChain::generateText(int numWords) {
+	usleep(100);
+	srand(time(0));
+	
+	int words = 0;
 
 	std::string result = "";
 	int randInt = Helper::randomInt(0, sentenceStarters.size());
 	std::string startWord = sentenceStarters[randInt];
 	std::string currentWord = startWord;
 	result += currentWord;
-	while (periods < numSentences ) {
+	while (words < numWords ) {
 		currentWord = pickWordFromRow(getIndexOfWord(currentWord));
 
 		if (currentWord == "") {
@@ -267,9 +269,7 @@ std::string MarkovChain::generateText(int numSentences) {
 			currentWord = sentenceStarters[Helper::randomInt(0, sentenceStarters.size())];
 		} else {
 			result += " " + currentWord;
-			if (Helper::contains(currentWord, ".")) {
-				periods++;
-			}
+			words++;
 		}
 	}
 

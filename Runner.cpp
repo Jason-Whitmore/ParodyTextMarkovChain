@@ -2,18 +2,20 @@
 
 
 int main() {
-	srand(NULL);
-	MarkovChain m = MarkovChain("MarkovChainData.txt", true);
+	srand(time(0));
+
+
+	std::cout << "Loading text into Markov Chain. Please wait." << std::endl;
+
+	MarkovChain m = MarkovChain("book.txt", false);
 	//MarkovChain m = MarkovChain("AGOT.txt", false);
 	
 
-	
 
-
-	std::cout << counter + 1 + n;
-	for (int i = 0; i < 500; i++) {
-		//std::cout << m.generateText(1) << std::endl << std::endl;
+	while(true){
+		std::cout << "Press any key to generate parody text." << std::endl << std::endl;
+		std::cin.get();
+		std::cout << m.generateText(100) << std::endl << std::endl;
 	}
 	
-	while(true);
 }
