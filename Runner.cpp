@@ -7,13 +7,10 @@ int main() {
 
 	std::cout << "Loading text into Markov Chain. Please wait." << std::endl;
 
-	MarkovChain m = MarkovChain("book.txt", false);
-	//MarkovChain m = MarkovChain("AGOT.txt", false);
-	
-
+	MarkovChain m = MarkovChain("book.txt");
 
 	while(true){
-		std::cout << "Press any key to generate parody text." << std::endl << std::endl;
+		std::cout << "Press enter to generate parody text." << std::endl << std::endl;
 		std::cin.get();
 		std::cout << m.generateText(100) << std::endl << std::endl;
 	}

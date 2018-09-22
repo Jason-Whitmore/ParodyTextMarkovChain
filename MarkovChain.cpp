@@ -1,6 +1,6 @@
 #include "MarkovChain.h"
 
-MarkovChain::MarkovChain(std::string filePath, bool isAdjList) {
+MarkovChain::MarkovChain(std::string filePath) {
 	std::string fileContents = "";
 	std::string singleLine;
 	std::ifstream file(filePath);
@@ -12,153 +12,117 @@ MarkovChain::MarkovChain(std::string filePath, bool isAdjList) {
 	
 	int currentIndex = 0;
 
-	if (isAdjList) {
+	
+	if (file.is_open()) {
 
-		Word w;
-		if (file.is_open()) {
-			
-			while (std::getline(file, singleLine)) {
-				//line's contents are in singleLine
-				lineSplit = Helper::split(singleLine, " ");
+		while (std::getline(file, singleLine)) {
+			//line's contents are in singleLine
+			lineSplit = Helper::split(singleLine, " ");
 
-				if (lineSplit[0] == "Starters") {
-					//line is a starter word
+			//loop through each word in the line
+			for (int i = 0; i < lineSplit.size(); i++) {
+				//is the word not in the wordset?
+				if (wordSet.count(hash(lineSplit[i])) == 0) {
+					setItem.index = currentIndex;
+					currentIndex++;
 
-					for (int i = 1; i < lineSplit.size(); i++) {
-						sentenceStarters.push_back(lineSplit[i]);
-					}
+					setItem.key = hash(lineSplit[i]);
+
+					setItem.word = lineSplit[i];
+
+					wordSet[hash(lineSplit[i])] = setItem;
+
 					
-				} else if (lineSplit[0] == "WordSetItem") {
-					setItem.index = std::stoi(lineSplit[1]);
-					setItem.key = std::stoi(lineSplit[2]);
-					setItem.word = lineSplit[3];
-					wordSet[hash(lineSplit[3])] = setItem;
-				} else if (lineSplit[0] == "AdjList") {
-					w.word = lineSplit[2];
-					w.probability = std::stod(lineSplit[3]);
-
-					adjList[getIndexOfWord(lineSplit[1])].push_back(w);
 				}
-
-				adjList.resize(wordSet.size());
 			}
 
 
-		} else {
-			//file could not be opened
 		}
+
+
 	} else {
-		
-		if (file.is_open()) {
-
-			while (std::getline(file, singleLine)) {
-				//line's contents are in singleLine
-				lineSplit = Helper::split(singleLine, " ");
-
-				//loop through each word in the line
-				for (int i = 0; i < lineSplit.size(); i++) {
-					//is the word not in the wordset?
-					if (wordSet.count(hash(lineSplit[i])) == 0) {
-						setItem.index = currentIndex;
-						currentIndex++;
-
-						setItem.key = hash(lineSplit[i]);
-
-						setItem.word = lineSplit[i];
-
-						wordSet[hash(lineSplit[i])] = setItem;
-
-						
-					}
-				}
-
-
-			}
-
-
-		} else {
-			//file could not be opened
-		}
-
-		adjList.resize(wordSet.size());
-
-		Word w;
-
-		for (auto& x: wordSet) {
-			w.word = x.second.word;
-			w.count = 0;
-			adjList[getIndexOfWord(w.word)].push_back(w);
-		}
-		file.close();
-
-		std::ifstream file2(filePath);
-		
-		//run through the file again: This time to construct the columns of the adj list
-		if (file2.is_open()) {
-
-			
-			while (std::getline(file2, singleLine)) {
-				//line's contents are in singleLine
-				lineSplit = Helper::split(singleLine, " ");
-
-				//add the start of the line into the sentence starters vector for use later
-				if (lineSplit[0].length() > 0) {
-					sentenceStarters.push_back(lineSplit[0]);
-				}
-				
-				
-				
-
-				//loop through each word in the line
-				for (int i = 0; i < lineSplit.size() - 1; i++) {
-					
-					//word currently not in the list?
-					if (!containedInAdjList(getIndexOfWord(lineSplit[i]), lineSplit[i+1])) {
-						//add the word to the list
-						w.word = lineSplit[i + 1];
-						w.count = 1;
-						adjList[getIndexOfWord(lineSplit[i])].push_back(w);
-					} else {
-						//in the adj list, increment.
-						incrementWordFromAdjList(getIndexOfWord(lineSplit[i]), lineSplit[i + 1]);
-					}
-
-				}
-
-				//collect the start of any sentence and put into a vector.
-
-
-			}
-
-
-		} else {
-			//file could not be opened
-		}
-
-		//set probabilities correctly
-
-		double totalCount = 0;
-		for (int r = 0; r < adjList.size(); r++) {
-			totalCount = 0;
-			//get total count
-			for (int c = 0; c < adjList[r].size(); c++) {
-				totalCount += adjList[r][c].count;
-			}
-
-			//set appropriate probability
-			for (int c = 0; c < adjList[r].size(); c++) {
-				if (totalCount == 0) {
-					adjList[r][c].probability = 0;
-				} else {
-					adjList[r][c].probability = adjList[r][c].count / totalCount;
-				}
-				
-			}
-		}
-
-
-
+		//file could not be opened
 	}
+
+	adjList.resize(wordSet.size());
+
+	Word w;
+
+	for (auto& x: wordSet) {
+		w.word = x.second.word;
+		w.count = 0;
+		adjList[getIndexOfWord(w.word)].push_back(w);
+	}
+	file.close();
+
+	std::ifstream file2(filePath);
+	
+	//run through the file again: This time to construct the columns of the adj list
+	if (file2.is_open()) {
+
+		
+		while (std::getline(file2, singleLine)) {
+			//line's contents are in singleLine
+			lineSplit = Helper::split(singleLine, " ");
+
+			//add the start of the line into the sentence starters vector for use later
+			if (lineSplit[0].length() > 0) {
+				sentenceStarters.push_back(lineSplit[0]);
+			}
+			
+			
+			
+
+			//loop through each word in the line
+			for (int i = 0; i < lineSplit.size() - 1; i++) {
+				
+				//word currently not in the list?
+				if (!containedInAdjList(getIndexOfWord(lineSplit[i]), lineSplit[i+1])) {
+					//add the word to the list
+					w.word = lineSplit[i + 1];
+					w.count = 1;
+					adjList[getIndexOfWord(lineSplit[i])].push_back(w);
+				} else {
+					//in the adj list, increment.
+					incrementWordFromAdjList(getIndexOfWord(lineSplit[i]), lineSplit[i + 1]);
+				}
+
+			}
+
+			//collect the start of any sentence and put into a vector.
+
+
+		}
+
+
+	} else {
+		//file could not be opened
+	}
+
+	//set probabilities correctly
+
+	double totalCount = 0;
+	for (int r = 0; r < adjList.size(); r++) {
+		totalCount = 0;
+		//get total count
+		for (int c = 0; c < adjList[r].size(); c++) {
+			totalCount += adjList[r][c].count;
+		}
+
+		//set appropriate probability
+		for (int c = 0; c < adjList[r].size(); c++) {
+			if (totalCount == 0) {
+				adjList[r][c].probability = 0;
+			} else {
+				adjList[r][c].probability = adjList[r][c].count / totalCount;
+			}
+			
+		}
+	}
+
+
+
+	
 }
 
 

@@ -25,7 +25,7 @@ struct WordSetItem {
 
 class MarkovChain {
 	public:
-	MarkovChain(std::string filePath, bool isAdjList);
+	MarkovChain(std::string filePath);
 	void printHighestProbability();
 	void writeAdjListToFile(std::string path);
 	std::string generateText(int numWords);
